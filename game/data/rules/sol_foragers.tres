@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="RuleModule" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/rule_module.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "sol_foragers"
+domain = "ecology"
+title = "Lumen Foragers"
+summary = "Local creatures drift toward bright ground and answer bells that ring within it."
+favored_affinity = "sol"
+experiment_tag = ""
+clue_text = "The native life keeps circling back to bright places, as if feeding on them."
+observables = PackedStringArray("Creatures settle on bright tiles.", "Bell chimes pull creatures more strongly through lit ground.")

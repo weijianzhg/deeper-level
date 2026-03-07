@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="RuleModule" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/rule_module.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "sunlit_tides"
+domain = "physical"
+title = "Sunlit Tides"
+summary = "Luminous ground rewards movement and contact. Shadowed ground resists you."
+favored_affinity = "sol"
+experiment_tag = ""
+clue_text = "The bright paths pulse back when touched. The dark seems to swallow motion."
+observables = PackedStringArray("Movement feels sharper on bright tiles.", "Machines respond more readily in the light.")

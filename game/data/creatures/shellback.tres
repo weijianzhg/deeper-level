@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CreatureTemplate" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/creature_template.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "shellback"
+title = "Shellback"
+color_hex = "#ffb703"
+speed = 44.0
+summary = "A slow but readable lifeform that settles when it finds terrain the world favors."

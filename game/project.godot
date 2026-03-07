@@ -1,0 +1,27 @@
+; Engine configuration file.
+; It's best edited using the editor.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+config/name="Deeper Level"
+run/main_scene="res://scenes/MetaHub.tscn"
+config/features=PackedStringArray("4.4")
+boot_splash/minimum_display_time=0
+icon="res://icon.svg"
+
+[autoload]
+ExtractionManager="*res://scripts/systems/extraction_manager.gd"
+
+[display]
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/stretch/mode="canvas_items"
+window/stretch/aspect="keep"
+
+[rendering]
+renderer/rendering_method="gl_compatibility"

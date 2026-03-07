@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="RuleModule" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/rule_module.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "presence_attunement"
+domain = "transformation"
+title = "Resonance of Presence"
+summary = "Resonators only accept direct contact when the explorer stands in terrain the world favors."
+favored_affinity = "neutral"
+experiment_tag = "presence"
+clue_text = "The stone wants a witness, but only where the world already agrees with your body."
+observables = PackedStringArray("Touching a resonator on favored terrain wakes it.", "Touching a resonator on resisted terrain does nothing.")

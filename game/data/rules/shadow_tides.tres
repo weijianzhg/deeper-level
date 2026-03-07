@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="RuleModule" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/rule_module.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "shadow_tides"
+domain = "physical"
+title = "Shadow Tides"
+summary = "Shadowed ground rewards movement and contact. Bright ground resists you."
+favored_affinity = "gloom"
+experiment_tag = ""
+clue_text = "Silence gathers in the dim places. Light feels brittle and wrong."
+observables = PackedStringArray("Movement feels sharper on shadow tiles.", "Machines respond more readily in the dark.")

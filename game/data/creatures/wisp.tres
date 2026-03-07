@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CreatureTemplate" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/creature_template.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "wisp"
+title = "Wisp"
+color_hex = "#cdb4db"
+speed = 66.0
+summary = "A fast drifting lifeform that exaggerates how the ecology rule bends motion."

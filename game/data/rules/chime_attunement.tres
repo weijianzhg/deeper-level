@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="RuleModule" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/rule_module.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "chime_attunement"
+domain = "transformation"
+title = "Resonance of Bells"
+summary = "Resonators only wake when a linked bell is rung from terrain the world favors."
+favored_affinity = "neutral"
+experiment_tag = "chime"
+clue_text = "The bells do not care about noise alone. They care whether the ground approves of the singer."
+observables = PackedStringArray("A linked bell can charge a resonator.", "The bell only works from favored terrain.")

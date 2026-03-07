@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CreatureTemplate" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/creature_template.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "forager"
+title = "Forager"
+color_hex = "#8ecae6"
+speed = 56.0
+summary = "A curious local lifeform that patrols for safe terrain and ringing chimes."

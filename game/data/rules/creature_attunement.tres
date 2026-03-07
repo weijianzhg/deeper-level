@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="RuleModule" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/rule_module.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "creature_attunement"
+domain = "transformation"
+title = "Resonance of Witnessed Life"
+summary = "Resonators wake only when local creatures enter their ring while standing on terrain the world favors."
+favored_affinity = "neutral"
+experiment_tag = "creature"
+clue_text = "The ancient machinery trusts local life more than strangers. Let the natives prove the rule."
+observables = PackedStringArray("Creatures can charge a resonator ring.", "The ring only accepts creatures on favored terrain.")

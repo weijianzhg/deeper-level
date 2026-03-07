@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="RuleModule" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/rule_module.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "gloom_foragers"
+domain = "ecology"
+title = "Gloom Foragers"
+summary = "Local creatures drift toward shadowed ground and answer bells that ring within it."
+favored_affinity = "gloom"
+experiment_tag = ""
+clue_text = "The native life nests in the dark. Bright places scatter its patterns."
+observables = PackedStringArray("Creatures settle on shadow tiles.", "Bell chimes pull creatures more strongly through dark ground.")
