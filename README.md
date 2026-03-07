@@ -1,128 +1,52 @@
-# World Labs API - 3D World Generator
+# Deeper Level
 
-Generate explorable 3D worlds from text prompts using the World Labs API, and view them locally with an interactive Three.js viewer.
+`Deeper Level` is a discovery-driven adventure roguelite prototype. Each run drops the player into a generated world with hidden rules, local lifeforms, and a coherent internal logic that can be learned through observation and experimentation.
 
-## Project Structure
+The current repository is focused on the first playable wedge:
 
-```
-deeper-level/
-├── generate_world.py   # Generate 3D worlds from text prompts
-├── proxy_server.py     # Local server for viewing (handles auth + CORS)
-├── viewer.html         # Interactive 3D viewer (SparkJS + Three.js)
-├── pyproject.toml      # Python dependencies
-└── .env                # API key (not committed)
-```
+- Can players tell that each world has different rules?
+- Is discovering those rules fun?
+- Do they want to immediately start another run?
 
-## Setup
+## Project Layout
 
-1. **Install uv** (if not already installed):
-   ```bash
-   curl -LsSf https://astral.sh/uv/install.sh | sh
-   ```
+The root of the repository is intentionally minimal:
 
-2. **Install dependencies**:
-   ```bash
-   uv sync
-   ```
+- `game/` - Godot 4 project for the playable prototype
+- `README.md` - top-level project overview
+- `LICENSE` - repository license
 
-3. **Configure API key** in `.env`:
-   ```
-   WORLDLABS_API_KEY=your_key_here
-   ```
+For implementation details and controls, see `game/README.md`.
 
-## Usage
+## Tech Stack
 
-### 1. Generate a 3D World
+- `Godot 4.x`
+- typed `GDScript`
+- data-driven rules via Godot `Resource` assets
+- local telemetry written to Godot `user://` storage
 
-```bash
-uv run python generate_world.py
-```
+## How To Run
 
-This will:
-- Send a text prompt to the World Labs API
-- Poll for completion (~3-5 minutes)
-- Display the browser URL and .spz file URLs
+1. Open `game/` as a Godot 4 project.
+2. Run the main scene.
+3. Start a run from the hub and infer how that world works.
 
-### 2. View the 3D World
+## Core Prototype Loop
 
-**Option A: World Labs Browser (easiest)**
-- Click the `world_marble_url` link from the output
-- No additional setup needed
+- enter a new world
+- observe terrain, creatures, and strange devices
+- form a hypothesis about the world's hidden rules
+- test that hypothesis through interaction
+- unlock the deeper chamber by understanding the world correctly
+- extract an artifact or take a transformation back into the meta-layer
 
-**Option B: Local Viewer**
+## Current Scope
 
-1. Start the proxy server:
-   ```bash
-   uv run python proxy_server.py
-   ```
+This prototype is intentionally narrow. It does **not** yet include:
 
-2. Open in your browser:
-   ```
-   http://localhost:8000/viewer.html
-   ```
+- world archetypes
+- async social systems
+- creator tools
+- deeper simulation
 
-3. Paste the `.spz` file URL (Full Resolution link) and click "Load World"
-
-**Viewer Controls:**
-
-| Input | Action |
-|-------|--------|
-| **Drag** | Rotate camera |
-| **Scroll** | Zoom in/out |
-| **Right-click drag** | Pan |
-| **W / Arrow Up** | Move forward |
-| **S / Arrow Down** | Move backward |
-| **A / Arrow Left** | Move left |
-| **D / Arrow Right** | Move right |
-| **E / Page Up** | Move up |
-| **Q / Page Down** | Move down |
-
-## Customization
-
-Edit `generate_world.py` to change the prompt:
-
-```python
-world = generate_world(
-    prompt_text="Your custom prompt here",
-    display_name="Your World Name"
-)
-```
-
-### Example Prompts
-
-- "A cozy coffee shop with warm lighting and wooden furniture"
-- "A mystical forest with glowing mushrooms"
-- "A modern office space with large windows"
-- "A beach sunset with palm trees"
-- "A cyberpunk alleyway with neon signs"
-- "An ancient temple overgrown with vines"
-
-## Output Formats
-
-The World Labs API generates:
-
-| Format | Description |
-|--------|-------------|
-| **SPZ** | 3D Gaussian Splat (best quality, ~30MB) |
-| **GLB** | Standard 3D mesh (Unity/Unreal compatible) |
-| **Panorama** | 360° images |
-
-## Technical Details
-
-- **Viewer**: Uses [SparkJS](https://sparkjs.dev/) with Three.js for rendering 3D Gaussian Splats
-- **Proxy Server**: Required because .spz files need API authentication and CORS headers
-- **Format**: SPZ is Niantic's open-source compressed Gaussian Splat format
-
-## Troubleshooting
-
-**"Failed to fetch" error in viewer**
-- Make sure proxy server is running: `uv run python proxy_server.py`
-- Access viewer via `http://localhost:8000/viewer.html` (not file://)
-
-**Generation takes too long**
-- World generation typically takes 3-5 minutes
-- Check the World Labs dashboard for status
-
-**API key issues**
-- Verify `.env` file exists with correct key
-- Key format: `WORLDLABS_API_KEY=your_key_here`
+Those come later only if the core discovery loop proves compelling.
