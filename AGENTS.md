@@ -33,10 +33,6 @@ The `gl_compatibility` renderer is required in the Cloud VM (no Vulkan/GPU suppo
 cd game && godot --rendering-method gl_compatibility
 ```
 
-### Known issue: ExtractionManager autoload conflict
-
-`scripts/systems/extraction_manager.gd` declares `class_name ExtractionManager` while also being registered as an autoload singleton named `ExtractionManager` in `project.godot`. Godot 4.4+ treats this as a parse error (`Class "ExtractionManager" hides an autoload singleton`), which prevents the main scene (`MetaHub`) and `RunWorld` from loading their scripts at runtime. The headless tests are unaffected because they do not depend on the autoload. To fix, remove the `class_name ExtractionManager` line from `extraction_manager.gd` (the singleton is accessed by autoload name, not class name).
-
 ### Project import
 
 Before first use, import the project so Godot caches resources and registers global class names:
