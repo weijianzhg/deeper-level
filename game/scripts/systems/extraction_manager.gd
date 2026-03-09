@@ -1,4 +1,3 @@
-class_name ExtractionManager
 extends Node
 
 const SAVE_PATH := "user://meta_save.json"

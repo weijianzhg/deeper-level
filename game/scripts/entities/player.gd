@@ -22,8 +22,8 @@ func tick(delta: float, run_world: Node, resolver: RuleResolver) -> void:
 	if input_vector.length() > 1.0:
 		input_vector = input_vector.normalized()
 
-	var current_cell := run_world.state.world_to_grid(position)
-	var affinity := run_world.state.get_affinity(current_cell)
+	var current_cell: Vector2i = run_world.state.world_to_grid(position)
+	var affinity: String = run_world.state.get_affinity(current_cell)
 	var speed_multiplier := resolver.get_player_speed_multiplier(affinity)
 	var motion := input_vector * move_speed * speed_multiplier * delta
 	position = run_world.slide_body(position, motion, 10.0)
