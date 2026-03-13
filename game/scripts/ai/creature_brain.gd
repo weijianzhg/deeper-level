@@ -22,9 +22,11 @@ func step_creature(
 
 	var next_position: Vector2 = creature["position"] + direction * speed * delta
 	var next_cell := world_state.world_to_grid(next_position)
+	creature["velocity"] = direction * speed
 	if world_state.is_walkable(next_cell):
 		creature["position"] = next_position
 	else:
+		creature["velocity"] = Vector2.ZERO
 		creature["wander_dir"] = -direction
 
 	var current_cell := world_state.world_to_grid(creature["position"])

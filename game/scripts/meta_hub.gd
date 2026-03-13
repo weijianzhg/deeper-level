@@ -1,6 +1,6 @@
 extends Control
 
-const RUN_WORLD_SCENE := preload("res://scenes/RunWorld.tscn")
+const RUN_WORLD_SCENE_PATH := "res://scenes/RunWorld.tscn"
 
 var summary_label := RichTextLabel.new()
 var progress_label := RichTextLabel.new()
@@ -16,10 +16,13 @@ func _build_ui() -> void:
 	background.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(background)
 
+	var center := CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	add_child(center)
+
 	var panel := PanelContainer.new()
-	panel.set_anchors_preset(Control.PRESET_CENTER)
 	panel.custom_minimum_size = Vector2(820, 560)
-	add_child(panel)
+	center.add_child(panel)
 
 	var root := VBoxContainer.new()
 	root.add_theme_constant_override("separation", 14)
@@ -102,7 +105,11 @@ func _summary_reward(summary: Dictionary) -> String:
 
 func _start_run() -> void:
 	ExtractionManager.note_run_started()
-	var run_world = RUN_WORLD_SCENE.instantiate()
+	var run_world_scene := load(RUN_WORLD_SCENE_PATH) as PackedScene
+	if run_world_scene == null:
+		push_error("Failed to load run world scene.")
+		return
+	var run_world = run_world_scene.instantiate()
 	run_world.run_seed = int(Time.get_unix_time_from_system()) + randi()
 	get_tree().root.add_child(run_world)
 	get_tree().current_scene = run_world

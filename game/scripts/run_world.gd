@@ -1,6 +1,8 @@
-extends Node2D
+extends Node
 
-const META_HUB_SCENE := preload("res://scenes/MetaHub.tscn")
+const WORLD_SCALE := 0.25
+
+const META_HUB_SCENE_PATH := "res://scenes/MetaHub.tscn"
 
 var run_seed: int = 0
 var state: WorldState
@@ -11,9 +13,11 @@ var telemetry: TelemetryLogger
 var generator := RunGenerator.new()
 var creature_brain := CreatureBrain.new()
 
-var world_root: Node2D
+var world_root: Node3D
 var world_view: WorldView
 var player: Player
+var camera: Camera3D
+var environment: WorldEnvironment
 var ui_root: Control
 var status_label := RichTextLabel.new()
 var journal_label := RichTextLabel.new()
@@ -40,8 +44,9 @@ func _process(delta: float) -> void:
 	_update_creatures(delta)
 	_check_creature_resonance()
 	_update_flash(delta)
+	_update_camera(delta)
 	_update_ui()
-	world_view.queue_redraw()
+	world_view.sync_dynamic()
 	rule_overlay.refresh()
 
 	if player.health <= 0.0:
@@ -79,14 +84,25 @@ func _unhandled_input(event: InputEvent) -> void:
 				rule_overlay.refresh()
 
 func _build_scene() -> void:
-	var background := ColorRect.new()
-	background.color = Color(0.05, 0.06, 0.08)
-	background.set_anchors_preset(Control.PRESET_FULL_RECT)
-	add_child(background)
+	environment = WorldEnvironment.new()
+	environment.environment = _build_environment()
+	add_child(environment)
 
-	world_root = Node2D.new()
-	world_root.position = Vector2(40, 72)
+	world_root = Node3D.new()
 	add_child(world_root)
+
+	var sun := DirectionalLight3D.new()
+	sun.rotation_degrees = Vector3(-58.0, 25.0, 0.0)
+	sun.light_energy = 1.9
+	sun.shadow_enabled = true
+	world_root.add_child(sun)
+
+	var fill := OmniLight3D.new()
+	fill.position = Vector3(0.0, 12.0, 0.0)
+	fill.light_color = Color(0.52, 0.66, 0.92)
+	fill.light_energy = 0.7
+	fill.omni_range = 120.0
+	world_root.add_child(fill)
 
 	world_view = WorldView.new()
 	world_view.run_world = self
@@ -94,6 +110,11 @@ func _build_scene() -> void:
 
 	player = Player.new()
 	world_root.add_child(player)
+
+	camera = Camera3D.new()
+	camera.current = true
+	camera.fov = 55.0
+	world_root.add_child(camera)
 
 	var canvas := CanvasLayer.new()
 	add_child(canvas)
@@ -150,14 +171,16 @@ func _start_run(seed: int) -> void:
 		"ecology": resolver.get_rule("ecology").id,
 		"transformation": resolver.get_rule("transformation").id
 	})
-	player.position = state.player_spawn
+	player.place_at(self, state.player_spawn)
 	player.health = 100.0
 	player.attunement = 55.0
+	world_view.rebuild_from_state()
+	_update_camera(1.0)
 	_update_ui()
 	_flash("Run seeded. Observe first, then test hypotheses.")
 
 func _update_player_observations() -> void:
-	var cell := state.world_to_grid(player.position)
+	var cell := state.world_to_grid(player.plane_position)
 	var affinity := state.get_affinity(cell)
 	if affinity != "neutral":
 		if resolver.is_favored_affinity(affinity):
@@ -295,7 +318,7 @@ func _charge_resonator(object_id: String, source: String) -> void:
 		_add_clue("All three resonators now agree. The inner gate has opened.", "gate_opened")
 
 func _player_on_favored_terrain() -> bool:
-	var cell := state.world_to_grid(player.position)
+	var cell := state.world_to_grid(player.plane_position)
 	return resolver.is_favored_affinity(state.get_affinity(cell))
 
 func _get_nearest_object() -> Dictionary:
@@ -303,14 +326,14 @@ func _get_nearest_object() -> Dictionary:
 	var best: Dictionary = {}
 	for object_data in state.objects:
 		var object_position := state.grid_to_world(Vector2i(object_data["position"]))
-		var distance := player.position.distance_to(object_position)
+		var distance := player.plane_position.distance_to(object_position)
 		if distance < best_distance:
 			best_distance = distance
 			best = object_data
 	return best
 
 func _update_ui() -> void:
-	var player_cell := state.world_to_grid(player.position)
+	var player_cell := state.world_to_grid(player.plane_position)
 	var terrain_name := resolver.get_affinity_display(state.get_affinity(player_cell))
 	status_label.text = (
 		"[b]Objective[/b]\n%s\n\n[b]Status[/b]\n"
@@ -349,6 +372,14 @@ func _update_flash(delta: float) -> void:
 	if flash_timer == 0.0:
 		flash_label.text = ""
 
+func _update_camera(delta: float) -> void:
+	if camera == null or player == null:
+		return
+	var target := plane_to_world(player.plane_position, 1.5)
+	var offset := Vector3(0.0, 34.0, 25.0)
+	camera.position = camera.position.lerp(target + offset, min(1.0, delta * 3.2))
+	camera.look_at(target + Vector3(0.0, 1.0, 0.0), Vector3.UP)
+
 func slide_body(current_position: Vector2, motion: Vector2, radius: float) -> Vector2:
 	var result := current_position
 	var x_step := Vector2(motion.x, 0.0)
@@ -371,6 +402,35 @@ func _circle_walkable(center: Vector2, radius: float) -> bool:
 			return false
 	return true
 
+func plane_to_world(point: Vector2, height: float = 0.0) -> Vector3:
+	var centered := (point - _plane_center_offset()) * WORLD_SCALE
+	return Vector3(centered.x, height, centered.y)
+
+func cell_to_world(cell: Vector2i, height: float = 0.0) -> Vector3:
+	return plane_to_world(state.grid_to_world(cell), height)
+
+func tile_world_size() -> float:
+	return state.tile_size * WORLD_SCALE
+
+func _plane_center_offset() -> Vector2:
+	if state == null:
+		return Vector2.ZERO
+	return Vector2(state.width * state.tile_size, state.height * state.tile_size) * 0.5
+
+func _build_environment() -> Environment:
+	var env := Environment.new()
+	env.background_mode = Environment.BG_COLOR
+	env.background_color = Color(0.04, 0.05, 0.07)
+	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+	env.ambient_light_color = Color(0.72, 0.79, 0.96)
+	env.ambient_light_energy = 0.9
+	env.fog_enabled = true
+	env.fog_density = 0.012
+	env.fog_light_color = Color(0.22, 0.24, 0.32)
+	env.fog_sun_scatter = 0.2
+	env.tonemap_mode = Environment.TONE_MAPPER_ACES
+	return env
+
 func _build_artifact_id() -> String:
 	return "%s_archive_seed" % resolver.get_favored_affinity()
 
@@ -390,7 +450,11 @@ func _finish_run(reason: String, reward_kind: String = "", reward_id: String = "
 
 	ExtractionManager.record_run_outcome(summary)
 
-	var hub = META_HUB_SCENE.instantiate()
+	var hub_scene := load(META_HUB_SCENE_PATH) as PackedScene
+	if hub_scene == null:
+		push_error("Failed to load meta hub scene.")
+		return
+	var hub = hub_scene.instantiate()
 	get_tree().root.add_child(hub)
 	get_tree().current_scene = hub
 	queue_free()
